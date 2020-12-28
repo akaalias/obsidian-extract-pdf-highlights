@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-extract-pdf-highlights",
+	"name": "Extract PDF Highlights",
+	"version": "0.0.1",
+	"minAppVersion": "0.9.12",
+	"description": "obsidian-extract-pdf-highlights",
+	"author": "Alexis Rondeau",
+	"authorUrl": "https://publish.obsidian.md/alexisrondeau",
+	"isDesktopOnly": false
+}
