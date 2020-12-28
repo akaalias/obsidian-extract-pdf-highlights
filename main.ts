@@ -30,7 +30,7 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		pdfjsCustom.GlobalWorkerOptions.workerSrc = worker;
 
 		finalHighlightsAnnotations = new Array();
-		
+
 		var SUPPORTED_ANNOTS = ['Text', 'Highlight', 'Underline'];
 
 		var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
@@ -45,16 +45,14 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 				var loadPage = function (pageNum) {
 					return doc.getPage(pageNum).then(async function (page) {
-
 						var scale = 1;
 						var viewport = page.getViewport(scale);
-						// Prepare canvas using PDF page dimensions
 						// @ts-ignore
 						var canvas = document.createElement('canvas');
 						var context = canvas.getContext('2d');
 						canvas.height = viewport.height;
 						canvas.width = viewport.width;
-						// Render PDF page into canvas context
+
 						var renderContext = {
 							canvasContext: context,
 							viewport: viewport
