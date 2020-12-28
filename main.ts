@@ -29,6 +29,8 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 		pdfjsCustom.GlobalWorkerOptions.workerSrc = worker;
 
+		finalHighlightsAnnotations = new Array();
+		
 		var SUPPORTED_ANNOTS = ['Text', 'Highlight', 'Underline'];
 
 		var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
