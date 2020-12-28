@@ -3,9 +3,9 @@ import { Plugin } from 'obsidian';
 import pdfjsCustom from 'node_modules/pdfjs-dist/build/pdf';
 import worker from 'node_modules/pdfjs-dist/build/pdf.worker.entry';
 
-var finalHighlights = new Array();
+var finalHighlightsAnnotations = new Array();
 
-export default class MyPlugin extends Plugin {
+export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 	async onload() {
 		console.log('loading plugin');
@@ -33,7 +33,7 @@ export default class MyPlugin extends Plugin {
 
 		var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
 
-		var finals = await loadingTask.promise
+		var finalAnnotations = await loadingTask.promise
 			.then(function (doc) {
 				var numPages = doc.numPages;
 
@@ -60,10 +60,6 @@ export default class MyPlugin extends Plugin {
 
 						var annotations = await page.getAnnotations();
 
-						annotations.map(function (anno) {
-							console.log(anno.id);
-						});
-
 						annotations = annotations
 							.map(function (anno) {
 								if (anno.subtype === undefined) anno.subtype = anno.type;
@@ -76,7 +72,7 @@ export default class MyPlugin extends Plugin {
 						await page.render(renderContext, annotations);
 
 						annotations.map(function (anno) {
-							finalHighlights.push(anno);
+							finalHighlightsAnnotations.push(anno);
 						});
 
 						return page
@@ -92,22 +88,43 @@ export default class MyPlugin extends Plugin {
 			})
 			.then(
 				function () {
-
-					finalHighlights.map(function (anno) {
-						console.log(anno.id);
-					});
-
-					console.log("End of Document");
-
-					return finalHighlights;
+					return finalHighlightsAnnotations;
 				},
 				function (err) {
 					console.error("Error: " + err);
 				}
 			);
 
+		var resultMD = finalAnnotations.filter(function (anno) {
+			if(typeof anno.highlightedText == 'undefined' || anno.highlightedText == "") {
+				return false;
+			} else {
+				return true;
+			}})
+			.map(function(anno) { return "- " + anno.highlightedText; })
+			.join("\n");
 
-		console.log("Finals");
-		console.log(finals);
+		var filePath = file.name.replace(".pdf", ".md");
+		filePath = "Highlights for " + filePath;
+
+		await this.saveHighlightsToFile(filePath, resultMD);
+		await this.app.workspace.openLinkText(filePath, '', true);
+	}
+
+	async saveHighlightsToFile(filePath: string, mdString: string) {
+		const fileExists = await this.app.vault.adapter.exists(filePath);
+		if (fileExists) {
+			await this.appendHighlightsToFile(filePath, mdString);
+		} else {
+			await this.app.vault.create(filePath, mdString);
+		}
+	}
+
+	async appendHighlightsToFile(filePath: string, note: string) {
+		let existingContent = await this.app.vault.adapter.read(filePath);
+		if(existingContent.length > 0) {
+			existingContent = existingContent + '\r\r';
+		}
+		await this.app.vault.adapter.write(filePath, existingContent + note);
 	}
 }
