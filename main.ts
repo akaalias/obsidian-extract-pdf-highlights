@@ -3,12 +3,14 @@ import { Plugin } from 'obsidian';
 import pdfjsCustom from 'node_modules/pdfjs-dist/build/pdf';
 import worker from 'node_modules/pdfjs-dist/build/pdf.worker.entry';
 
+var finalHighlights = new Array();
+
 export default class MyPlugin extends Plugin {
 
 	async onload() {
 		console.log('loading plugin');
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
+		this.addRibbonIcon('pdf-file', 'PDF Highlights', () => {
 			this.fetchAllTheThings();
 		});
 	}
@@ -17,26 +19,27 @@ export default class MyPlugin extends Plugin {
 		console.log('unloading plugin');
 	}
 
-	fetchAllTheThings() {
-		var SUPPORTED_ANNOTS = ['Text','Highlight','Underline'];
+	async fetchAllTheThings() {
+		let file = this.app.workspace.getActiveFile();
 
-		let activeLeaf: any = this.app.workspace.activeLeaf ?? null
-		if (typeof activeLeaf?.view.file == 'undefined') return;
-		let pdfPath = activeLeaf?.view.file.path;
-		if(!pdfPath.endsWith(".pdf")) return;
-		const vaultPath = activeLeaf?.view.file.vault.adapter.basePath;
-		const onlyPath = vaultPath + "/" + pdfPath;
-		const theFullPath = "file://" + onlyPath;
+		if (file === null) return;
+		if (file.extension !== 'pdf') return;
+
+		let arrayBuffer = await this.app.vault.readBinary(file);
 
 		pdfjsCustom.GlobalWorkerOptions.workerSrc = worker;
 
-		var loadingTask = pdfjsCustom.getDocument(theFullPath);
-		loadingTask.promise
+		var SUPPORTED_ANNOTS = ['Text', 'Highlight', 'Underline'];
+
+		var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
+
+		var finals = await loadingTask.promise
 			.then(function (doc) {
 				var numPages = doc.numPages;
 
 				var lastPromise; // will be used to chain promises
-				lastPromise = doc.getMetadata().then(function (data) {});
+				lastPromise = doc.getMetadata().then(function (data) {
+				});
 
 				var loadPage = function (pageNum) {
 					return doc.getPage(pageNum).then(async function (page) {
@@ -44,6 +47,7 @@ export default class MyPlugin extends Plugin {
 						var scale = 1;
 						var viewport = page.getViewport(scale);
 						// Prepare canvas using PDF page dimensions
+						// @ts-ignore
 						var canvas = document.createElement('canvas');
 						var context = canvas.getContext('2d');
 						canvas.height = viewport.height;
@@ -56,24 +60,23 @@ export default class MyPlugin extends Plugin {
 
 						var annotations = await page.getAnnotations();
 
-						console.log(annotations);
-
-						var SUPPORTED_ANNOTS = ['Text','Highlight','Underline'];
+						annotations.map(function (anno) {
+							console.log(anno.id);
+						});
 
 						annotations = annotations
-							.map(function(anno) {
-								if (anno.subtype===undefined) anno.subtype=anno.type;
+							.map(function (anno) {
+								if (anno.subtype === undefined) anno.subtype = anno.type;
 								return anno;
 							})
-							.filter(function(anno) {
+							.filter(function (anno) {
 								return SUPPORTED_ANNOTS.indexOf(anno.subtype) >= 0;
 							});
 
-						var render = page.render(renderContext, annotations);
+						await page.render(renderContext, annotations);
 
-						render.then(function() {
-							annotations = annotations.map(function(anno) {
-							});
+						annotations.map(function (anno) {
+							finalHighlights.push(anno);
 						});
 
 						return page
@@ -89,11 +92,22 @@ export default class MyPlugin extends Plugin {
 			})
 			.then(
 				function () {
-					console.log("# End of Document");
+
+					finalHighlights.map(function (anno) {
+						console.log(anno.id);
+					});
+
+					console.log("End of Document");
+
+					return finalHighlights;
 				},
 				function (err) {
 					console.error("Error: " + err);
 				}
 			);
+
+
+		console.log("Finals");
+		console.log(finals);
 	}
 }
