@@ -26,9 +26,31 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		if (file.extension !== 'pdf') return;
 
 		var rawAnnotationsFromPDF = await this.fetchAllTheThings(file);
+
+		console.log("rawAnnotationsFromPDF:");
+		console.log(rawAnnotationsFromPDF);
+
 		var filteredAnnotations = this.filterRawAnnotations(rawAnnotationsFromPDF);
-		var sortedAnnotations = this.sortAnnotations(filteredAnnotations);
-		const finalMarkdown = this.generateFinalMarkdown(sortedAnnotations);
+
+		console.log("filteredAnnotations:");
+		console.log(filteredAnnotations);
+
+		var groupedAnnotationsByPageMap = this.groupAnnotationsByPage(filteredAnnotations);
+
+		console.log("groupedAnnotationsByPageMap:");
+		console.log(groupedAnnotationsByPageMap);
+
+		var sortedAnnotationsByPositionGroupedByPage = this.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
+
+		console.log("sortedAnnotationsByPositionGroupedByPage:");
+		console.log(sortedAnnotationsByPositionGroupedByPage);
+
+		var flattenedAnnotationsByPosition = this.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
+
+		console.log("flattenedAnnotationsByPosition:");
+		console.log(flattenedAnnotationsByPosition);
+
+		const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition);
 
 		var filePath = file.name.replace(".pdf", ".md");
 		filePath = "Highlights for " + filePath;
@@ -37,8 +59,49 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		await this.app.workspace.openLinkText(filePath, '', true);
 	}
 
-	sortAnnotations(filteredAnnotations) {
-		return filteredAnnotations;
+	flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage: {}) {
+		let flattenedAnnotationsByPosition = new Array();
+
+		for (let key in sortedAnnotationsByPositionGroupedByPage) {
+			for(var i = 0; i < sortedAnnotationsByPositionGroupedByPage[key].length; i++) {
+				flattenedAnnotationsByPosition.push(sortedAnnotationsByPositionGroupedByPage[key][i]);
+			}
+		}
+
+		return flattenedAnnotationsByPosition;
+	}
+
+	sortAnnotationsByPosition(groupedAnnotationsByPageMap) {
+
+		var newMap = {};
+
+		for (let key in groupedAnnotationsByPageMap) {
+			newMap[key] =  groupedAnnotationsByPageMap[key].sort(function (left, right) {
+				if(left.quadPoints[0].dims.minY < right.quadPoints[0].dims.minY) {
+					return -1;
+				}
+
+				if(left.quadPoints[0].dims.minY > right.quadPoints[0].dims.minY) {
+					return 1;
+				}
+
+				return 0;
+			});
+		}
+
+		return newMap;
+    }
+
+	groupAnnotationsByPage(filteredAnnotations) {
+
+		var groupBy = function(xs, key) {
+			return xs.reduce(function(rv, x) {
+				(rv[x[key]] = rv[x[key]] || []).push(x);
+				return rv;
+			}, {});
+		};
+
+		return groupBy(filteredAnnotations, 'pageNumber');
     }
 
 	private filterRawAnnotations(rawAnnotationsFromPDF) {
@@ -54,7 +117,7 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 	private generateFinalMarkdown(annotations) {
 		return annotations.map(function (anno) {
-			return "- " + anno.highlightedText;
+			return "- " + anno.highlightedText + " (Page " + anno.pageNumber + ")";
 		}).join("\n");
 	}
 
