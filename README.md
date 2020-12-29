@@ -23,7 +23,6 @@ After you've installed and activated the plugin:
 - Create links (Default: off)
 
 ## Backlog
-
 The list of features and improvements for this plugin.
 
 ### ICEBOX
@@ -34,6 +33,7 @@ The list of features and improvements for this plugin.
 - [ ] Fix missing space after newline (Very complex)
 
 ### DOING
+...
 
 ### DONE
 - [x] Show highlight color (Optional)
@@ -46,3 +46,8 @@ The list of features and improvements for this plugin.
 - [x] Extract unsorted list of UNDERLINE annotations
 - [x] Decide if to integrate with existing Highlights Plugin
 
+### Contribute
+I'd love to hear from you, so please check out the [Contribution page](CONTRIBUTING.md) to get in touch!
+
+## Major Thanks
+This plugin stands on the shoulders of [Joseph Devietti](https://github.com/devietti/) and [his 2012 pull-request for PDFJS](https://github.com/devietti/pdf.js/commit/9116f2cddddd5327d84167a98d92c0de42de94fd).
