@@ -3,7 +3,7 @@
 	"name": "Extract PDF Highlights",
 	"version": "0.0.1",
 	"minAppVersion": "0.9.12",
-	"description": "obsidian-extract-pdf-highlights",
+	"description": "Extract highlighted and underlined text from your PDFs into a markdown file in your Obsidian vault.",
 	"author": "Alexis Rondeau",
 	"authorUrl": "https://publish.obsidian.md/alexisrondeau",
 	"isDesktopOnly": false
