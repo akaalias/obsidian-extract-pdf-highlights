@@ -26,29 +26,10 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		if (file.extension !== 'pdf') return;
 
 		var rawAnnotationsFromPDF = await this.fetchAllTheThings(file);
-
-		console.log("rawAnnotationsFromPDF:");
-		console.log(rawAnnotationsFromPDF);
-
 		var filteredAnnotations = this.filterRawAnnotations(rawAnnotationsFromPDF);
-
-		console.log("filteredAnnotations:");
-		console.log(filteredAnnotations);
-
 		var groupedAnnotationsByPageMap = this.groupAnnotationsByPage(filteredAnnotations);
-
-		console.log("groupedAnnotationsByPageMap:");
-		console.log(groupedAnnotationsByPageMap);
-
 		var sortedAnnotationsByPositionGroupedByPage = this.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
-
-		console.log("sortedAnnotationsByPositionGroupedByPage:");
-		console.log(sortedAnnotationsByPositionGroupedByPage);
-
 		var flattenedAnnotationsByPosition = this.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
-
-		console.log("flattenedAnnotationsByPosition:");
-		console.log(flattenedAnnotationsByPosition);
 
 		const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition);
 
