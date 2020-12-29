@@ -46,15 +46,26 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 		let mdString = "";
 		for(let anno of annotations) {
-			let str = "- " + anno.highlightedText;
+
+			let text = anno.highlightedText;
 
 			if(this.settings.includePageNumber) {
-				str = str + " (Page " + anno.pageNumber + ")";
+				text = text + " (Page " + anno.pageNumber + ")";
 			}
 
-			str += "\n";
+			if(this.settings.includeHighlightColor) {
+				text = text + " " + this.getColorTagForAnnotation(anno);
+			}
 
-			mdString += str;
+			if(this.settings.createLinks) {
+				text = "[[" + text + "]]";
+			}
+
+			text = "- " + text;
+
+			text += "\n";
+
+			mdString += text;
 		}
 
 		mdString += `\n## Source\n[[${fileName}]]`;
@@ -87,9 +98,40 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 			const loadedSettings = await this.loadData();
 			if (loadedSettings) {
 				this.settings.includePageNumber = loadedSettings.includePageNumber;
+				this.settings.includeHighlightColor = loadedSettings.includeHighlightColor;
+				this.settings.createLinks = loadedSettings.createLinks;
 			} else {
-				this.saveData(this.settings);
+				await this.saveData(this.settings);
 			}
 		})();
+	}
+
+	private getColorTagForAnnotation(anno) {
+		const colorArray = anno.color;
+		const red = colorArray[0];
+		const green = colorArray[1];
+		const blue = colorArray[2];
+
+		if(red == 250 && green == 205 && blue == 90) {
+			return "🟡";
+		}
+
+		if(red == 124 && green == 200 && blue == 104) {
+			return "🟢";
+		}
+
+		if(red == 105 && green == 176 && blue == 241) {
+			return "🔵";
+		}
+
+		if(red == 251 && green == 92 && blue == 137) {
+			return "🔴";
+		}
+
+		if(red == 200 && green == 133 && blue == 218) {
+			return "🟣";
+		}
+
+		return "";
 	}
 }

@@ -27,5 +27,29 @@ export default class ExtractPDFHighlightsPluginSettingsTab extends PluginSetting
                     this.plugin.saveData(this.plugin.settings);
                 }),
             );
+
+        new Setting(containerEl)
+            .setName('Include highlighter color')
+            .setDesc(
+                'If enabled, adds a color tag to each highlight based on the highlighter color used in the PDF',
+            )
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.includeHighlightColor).onChange((value) => {
+                    this.plugin.settings.includeHighlightColor = value;
+                    this.plugin.saveData(this.plugin.settings);
+                }),
+            );
+
+        new Setting(containerEl)
+            .setName('Create links')
+            .setDesc(
+                'If enabled, turns each list item into a markdown link',
+            )
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.createLinks).onChange((value) => {
+                    this.plugin.settings.createLinks = value;
+                    this.plugin.saveData(this.plugin.settings);
+                }),
+            );
     }
 }
