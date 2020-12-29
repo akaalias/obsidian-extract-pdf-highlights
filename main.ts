@@ -11,7 +11,7 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		console.log('loading plugin');
 
 		this.addRibbonIcon('pdf-file', 'PDF Highlights', () => {
-			this.fetchAllTheThings();
+			this.processPDFHighlights();
 		});
 	}
 
@@ -19,11 +19,46 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		console.log('unloading plugin');
 	}
 
-	async fetchAllTheThings() {
+	async processPDFHighlights() {
 		let file = this.app.workspace.getActiveFile();
 
 		if (file === null) return;
 		if (file.extension !== 'pdf') return;
+
+		var rawAnnotationsFromPDF = await this.fetchAllTheThings(file);
+		var filteredAnnotations = this.filterRawAnnotations(rawAnnotationsFromPDF);
+		var sortedAnnotations = this.sortAnnotations(filteredAnnotations);
+		const finalMarkdown = this.generateFinalMarkdown(sortedAnnotations);
+
+		var filePath = file.name.replace(".pdf", ".md");
+		filePath = "Highlights for " + filePath;
+
+		await this.saveHighlightsToFile(filePath, finalMarkdown);
+		await this.app.workspace.openLinkText(filePath, '', true);
+	}
+
+	sortAnnotations(filteredAnnotations) {
+		return filteredAnnotations;
+    }
+
+	private filterRawAnnotations(rawAnnotationsFromPDF) {
+		var filteredAnnotations = rawAnnotationsFromPDF.filter(function (anno) {
+			if (typeof anno.highlightedText == 'undefined' || anno.highlightedText == "") {
+				return false;
+			} else {
+				return true;
+			}
+		});
+		return filteredAnnotations;
+	}
+
+	private generateFinalMarkdown(annotations) {
+		return annotations.map(function (anno) {
+			return "- " + anno.highlightedText;
+		}).join("\n");
+	}
+
+	async fetchAllTheThings(file) {
 
 		let arrayBuffer = await this.app.vault.readBinary(file);
 
@@ -35,7 +70,7 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 		var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
 
-		var finalAnnotations = await loadingTask.promise
+		return await loadingTask.promise
 			.then(function (doc) {
 				var numPages = doc.numPages;
 
@@ -72,6 +107,7 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 						await page.render(renderContext, annotations);
 
 						annotations.map(function (anno) {
+							anno.pageNumber = pageNum;
 							finalHighlightsAnnotations.push(anno);
 						});
 
@@ -94,21 +130,6 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 					console.error("Error: " + err);
 				}
 			);
-
-		var resultMD = finalAnnotations.filter(function (anno) {
-			if(typeof anno.highlightedText == 'undefined' || anno.highlightedText == "") {
-				return false;
-			} else {
-				return true;
-			}})
-			.map(function(anno) { return "- " + anno.highlightedText; })
-			.join("\n");
-
-		var filePath = file.name.replace(".pdf", ".md");
-		filePath = "Highlights for " + filePath;
-
-		await this.saveHighlightsToFile(filePath, resultMD);
-		await this.app.workspace.openLinkText(filePath, '', true);
 	}
 
 	async saveHighlightsToFile(filePath: string, mdString: string) {
