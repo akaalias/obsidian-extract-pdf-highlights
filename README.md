@@ -1,13 +1,31 @@
-## Extract PDF Highlights for Obsidian
+## Extract your PDF text-highlights into Obsidian
+
+This plugin allows you to **extract highlighted and underlined text from your PDFs** into a markdown file in your Obsidian vault.
+
+### How it works
+
+After you've installed and activated the plugin:
+
+1. Drop your highlighted PDF into your Obsidian vault
+2. Open the PDF in Obsidian
+3. Click the "PDF" icon in the left sidebar
+
+### Optional settings
+
+- Include page number (Default: off)
+- Include highlight color (Default: off)
+- Create links (Default: off)
 
 ## Backlog
+
+The list of features and improvements for this plugin.
 
 ### ICEBOX
 - [ ] Group highlights by highlight color (Optional)
 
 ### TODO
 - [ ] Refactor pdfjs import to not overload Obsidian worker
-- [ ] Fix missing space after newline
+- [ ] Fix missing space after newline (Very complex)
 
 ### DOING
 
