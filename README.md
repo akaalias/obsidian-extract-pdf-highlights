@@ -10,6 +10,12 @@ After you've installed and activated the plugin:
 2. Open the PDF in Obsidian
 3. Click the "PDF" icon in the left sidebar
 
+### Demo with default settings
+![Simple](https://github.com/akaalias/obsidian-extract-pdf-highlights/blob/main/simple.gif?raw=true)
+
+### Demo with all optional settings turned on
+![Settings](https://github.com/akaalias/obsidian-extract-pdf-highlights/blob/main/settings.gif?raw=true)
+
 ### Optional settings
 
 - Include page number (Default: off)
