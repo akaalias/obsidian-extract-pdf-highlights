@@ -10,10 +10,9 @@
 - [ ] Integrate with existing Highlights Plugin
 
 ### DOING
-- [ ] Sort highlights by position in document and page (Mandatory)
 
 ### DONE
-
+- [x] Sort highlights by position in document and page (Mandatory)
 - [x] Extract unsorted list of HIGHLIGHT annotations
 - [x] Extract unsorted list of TEXT annotations
 - [x] Extract unsorted list of UNDERLINE annotations
