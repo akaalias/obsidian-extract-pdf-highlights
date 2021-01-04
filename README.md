@@ -27,10 +27,11 @@ The list of features and improvements for this plugin.
 
 ### ICEBOX
 - [ ] Group highlights by highlight color (Optional)
+- [ ] Refactor pdfjs import to not overload Obsidian worker (Ideas from @lishid?)
 
 ### TODO
-- [ ] Refactor pdfjs import to not overload Obsidian worker
 - [ ] Fix missing space after newline (Very complex)
+- [ ] Auto-create notes from links with highlight/annotation as quote with backlink to source PDF
 
 ### DOING
 ...
