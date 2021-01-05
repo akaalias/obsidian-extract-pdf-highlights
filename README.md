@@ -26,12 +26,14 @@ After you've installed and activated the plugin:
 The list of features and improvements for this plugin.
 
 ### ICEBOX
-- [ ] Group highlights by highlight color (Optional)
 - [ ] Refactor pdfjs import to not overload Obsidian worker (Ideas from @lishid?)
+- [ ] Record demo video, quick-start walk-through for new users
 
 ### TODO
-- [ ] Fix missing space after newline (Very complex)
 - [ ] Auto-create notes from links with highlight/annotation as quote with backlink to source PDF
+- [ ] Group highlights by highlight color (Optional)
+- [ ] Add progress bar/modal to show "Processed Page 5/10 (50%)" or similar for longer PDFs 
+- [ ] Fix missing space after newline (Very complex)
 
 ### DOING
 ...
