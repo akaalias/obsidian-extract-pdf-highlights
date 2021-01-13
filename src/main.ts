@@ -1,12 +1,13 @@
-import { Plugin } from 'obsidian';
+import {App, Modal, Plugin} from 'obsidian';
 
 import ExtractPDFHighlightsPluginSettings from "./ExtractPDFHighlightsPluginSettings";
 import ExtractPDFHighlightsPluginSettingsTab from "./ExtractPDFHighlightsPluginSettingsTab";
-import PDFAnnotationsManager from "./PDFAnnotationsManager";
+// import PDFAnnotationsManager from "./PDFAnnotationsManager";
 
 export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 	public settings: ExtractPDFHighlightsPluginSettings;
+	private modal: ProgressModal;
 
 	async onload() {
 		this.loadSettings();
@@ -19,27 +20,30 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 	onunload() {}
 
 	async processPDFHighlights() {
-		let file = this.app.workspace.getActiveFile();
+		this.modal = new ProgressModal(this.app);
+		this.modal.open();
 
-		if (file === null) return;
-		if (file.extension !== 'pdf') return;
-
-		let arrayBuffer = await this.app.vault.readBinary(file);
-		let pdfAnnotationsManager = new PDFAnnotationsManager();
-
-		let rawAnnotationsFromPDF = await pdfAnnotationsManager.fetchRawAnnotationsFromPDF(arrayBuffer);
-		let filteredAnnotations = pdfAnnotationsManager.filterRawAnnotations(rawAnnotationsFromPDF);
-		let groupedAnnotationsByPageMap = pdfAnnotationsManager.groupAnnotationsByPage(filteredAnnotations);
-		let sortedAnnotationsByPositionGroupedByPage = pdfAnnotationsManager.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
-		let flattenedAnnotationsByPosition = pdfAnnotationsManager.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
-
-		const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition, file.name);
-
-		let filePath = file.name.replace(".pdf", ".md");
-		filePath = "Highlights for " + filePath;
-
-		await this.saveHighlightsToFile(filePath, finalMarkdown);
-		await this.app.workspace.openLinkText(filePath, '', true);
+		// let file = this.app.workspace.getActiveFile();
+		//
+		// if (file === null) return;
+		// if (file.extension !== 'pdf') return;
+		//
+		// let arrayBuffer = await this.app.vault.readBinary(file);
+		// let pdfAnnotationsManager = new PDFAnnotationsManager();
+		//
+		// let rawAnnotationsFromPDF = await pdfAnnotationsManager.fetchRawAnnotationsFromPDF(arrayBuffer);
+		// let filteredAnnotations = pdfAnnotationsManager.filterRawAnnotations(rawAnnotationsFromPDF);
+		// let groupedAnnotationsByPageMap = pdfAnnotationsManager.groupAnnotationsByPage(filteredAnnotations);
+		// let sortedAnnotationsByPositionGroupedByPage = pdfAnnotationsManager.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
+		// let flattenedAnnotationsByPosition = pdfAnnotationsManager.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
+		//
+		// const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition, file.name);
+		//
+		// let filePath = file.name.replace(".pdf", ".md");
+		// filePath = "Highlights for " + filePath;
+		//
+		// await this.saveHighlightsToFile(filePath, finalMarkdown);
+		// await this.app.workspace.openLinkText(filePath, '', true);
 	}
 
 	private generateFinalMarkdown(annotations, fileName) {
@@ -133,5 +137,24 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		}
 
 		return "";
+	}
+}
+
+class ProgressModal extends Modal {
+	public fileName: string;
+
+	constructor(app: App) {
+		super(app);
+	}
+
+	onOpen() {
+		let {contentEl} = this;
+		contentEl.createEl("h2", {text: "Extract PDF Highlights"});
+		contentEl.createEl("p", {text: "I'm sorry but due to an unexpected incompatibility with Obsidian Core PDF handling as of v0.10.8 this plugin is currently disabled. In the meantime, you can use Zotero + Zotfile to extract PDF highlights and annotations. I'm sorry for the inconvenience and working on fixing this issue. If you have any questions, please email me at alexis.rondeau@gmail.com! Thank you for your patience, Alexis :)"});
+	}
+
+	onClose() {
+		let {contentEl} = this;
+		contentEl.empty();
 	}
 }

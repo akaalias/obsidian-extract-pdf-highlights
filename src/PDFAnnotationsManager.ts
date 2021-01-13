@@ -1,5 +1,5 @@
-import pdfjsCustom from "node_modules/pdfjs-dist/build/pdf";
-import worker from "node_modules/pdfjs-dist/build/pdf.worker.entry";
+import * as customPDFJS from "node_modules/pdfjs-dist/build/pdf";
+import * as customPDFJSWorker from "node_modules/pdfjs-dist/build/pdf.worker.entry";
 
 var finalHighlightsAnnotations = new Array();
 
@@ -7,13 +7,13 @@ export default class PDFAnnotationsManager {
 
     async fetchRawAnnotationsFromPDF(arrayBuffer) {
 
-        pdfjsCustom.GlobalWorkerOptions.workerSrc = worker;
+        customPDFJS.GlobalWorkerOptions.workerSrc = customPDFJSWorker;
 
         finalHighlightsAnnotations = new Array();
 
         var SUPPORTED_ANNOTS = ['Text', 'Highlight', 'Underline'];
 
-        var loadingTask = pdfjsCustom.getDocument(arrayBuffer);
+        var loadingTask = customPDFJS.getDocument(arrayBuffer);
 
         return await loadingTask.promise
             .then(function (doc) {
