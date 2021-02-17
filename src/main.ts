@@ -2,7 +2,7 @@ import {App, Modal, Plugin} from 'obsidian';
 
 import ExtractPDFHighlightsPluginSettings from "./ExtractPDFHighlightsPluginSettings";
 import ExtractPDFHighlightsPluginSettingsTab from "./ExtractPDFHighlightsPluginSettingsTab";
-// import PDFAnnotationsManager from "./PDFAnnotationsManager";
+import PDFAnnotationsManager from "./PDFAnnotationsManager";
 
 export default class ExtractPDFHighlightsPlugin extends Plugin {
 
@@ -21,29 +21,29 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 	async processPDFHighlights() {
 		this.modal = new ProgressModal(this.app);
-		this.modal.open();
+		// this.modal.open();
 
-		// let file = this.app.workspace.getActiveFile();
-		//
-		// if (file === null) return;
-		// if (file.extension !== 'pdf') return;
-		//
-		// let arrayBuffer = await this.app.vault.readBinary(file);
-		// let pdfAnnotationsManager = new PDFAnnotationsManager();
-		//
-		// let rawAnnotationsFromPDF = await pdfAnnotationsManager.fetchRawAnnotationsFromPDF(arrayBuffer);
-		// let filteredAnnotations = pdfAnnotationsManager.filterRawAnnotations(rawAnnotationsFromPDF);
-		// let groupedAnnotationsByPageMap = pdfAnnotationsManager.groupAnnotationsByPage(filteredAnnotations);
-		// let sortedAnnotationsByPositionGroupedByPage = pdfAnnotationsManager.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
-		// let flattenedAnnotationsByPosition = pdfAnnotationsManager.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
-		//
-		// const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition, file.name);
-		//
-		// let filePath = file.name.replace(".pdf", ".md");
-		// filePath = "Highlights for " + filePath;
-		//
-		// await this.saveHighlightsToFile(filePath, finalMarkdown);
-		// await this.app.workspace.openLinkText(filePath, '', true);
+		let file = this.app.workspace.getActiveFile();
+
+		if (file === null) return;
+		if (file.extension !== 'pdf') return;
+
+		let arrayBuffer = await this.app.vault.readBinary(file);
+		let pdfAnnotationsManager = new PDFAnnotationsManager();
+
+		let rawAnnotationsFromPDF = await pdfAnnotationsManager.fetchRawAnnotationsFromPDF(arrayBuffer);
+		let filteredAnnotations = pdfAnnotationsManager.filterRawAnnotations(rawAnnotationsFromPDF);
+		let groupedAnnotationsByPageMap = pdfAnnotationsManager.groupAnnotationsByPage(filteredAnnotations);
+		let sortedAnnotationsByPositionGroupedByPage = pdfAnnotationsManager.sortAnnotationsByPosition(groupedAnnotationsByPageMap);
+		let flattenedAnnotationsByPosition = pdfAnnotationsManager.flattenAnnotationsByPosition(sortedAnnotationsByPositionGroupedByPage);
+
+		const finalMarkdown = this.generateFinalMarkdown(flattenedAnnotationsByPosition, file.name);
+
+		let filePath = file.name.replace(".pdf", ".md");
+		filePath = "Highlights for " + filePath;
+
+		await this.saveHighlightsToFile(filePath, finalMarkdown);
+		await this.app.workspace.openLinkText(filePath, '', true);
 	}
 
 	private generateFinalMarkdown(annotations, fileName) {

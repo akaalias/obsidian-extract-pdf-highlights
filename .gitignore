@@ -6,6 +6,6 @@
 node_modules
 package-lock.json
 
-# build
+# lib
 main.js
 *.js.map
