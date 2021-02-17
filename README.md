@@ -26,22 +26,22 @@ After you've installed and activated the plugin:
 The list of features and improvements for this plugin.
 
 ### ICEBOX
-- [ ] Refactor pdfjs import to not overload Obsidian worker (Ideas from @lishid?)
 - [ ] Record demo video, quick-start walk-through for new users
 
 ### TODO
 - [ ] Auto-create notes from links with highlight/annotation as quote with backlink to source PDF
 - [ ] Group highlights by highlight color (Optional)
-- [ ] Add progress bar/modal to show "Processed Page 5/10 (50%)" or similar for longer PDFs 
+- [ ] Add progress bar/modal to show "Processed Page 5/10 (50%)" or similar for longer PDFs
 - [ ] Fix missing space after newline (Very complex)
 
 ### DOING
 ...
 
 ### DONE
+- [x] Refactor pdfjs import to not overload Obsidian worker (Ideas from @lishid?)
 - [x] Show highlight color (Optional)
 - [x] Auto-link list items (Optional)
-- [x] Refactor/extract PDF from main.ts 
+- [x] Refactor/extract PDF from main.ts
 - [x] Add Page-number to each highlight (Optional)
 - [x] Sort highlights by position in document and page (Mandatory)
 - [x] Extract unsorted list of HIGHLIGHT annotations

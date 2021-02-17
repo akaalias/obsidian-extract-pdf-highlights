@@ -1,6 +1,6 @@
 {
   "name": "obsidian-extract-pdf-highlights",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "obsidian-extract-pdf-highlights",
   "main": "main.js",
   "scripts": {

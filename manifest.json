@@ -1,9 +1,9 @@
 {
 	"id": "obsidian-extract-pdf-highlights",
 	"name": "PDF Highlights",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"minAppVersion": "0.9.12",
-	"description": "[Currently disabled] Extract highlights, underlines and annotations from your PDFs into Obsidian",
+	"description": "Extract highlights, underlines and annotations from your PDFs into Obsidian",
 	"author": "Alexis Rondeau",
 	"authorUrl": "https://publish.obsidian.md/alexisrondeau",
 	"isDesktopOnly": false
