@@ -48,8 +48,10 @@ export default class PDFAnnotationsManager {
                             .filter(function (anno) {
                                 return SUPPORTED_ANNOTS.indexOf(anno.subtype) >= 0;
                             });
-
-                        await page.render(renderContext, annotations);
+                        
+                        if(annotations.length > 0) {
+                            await page.render(renderContext, annotations);
+                        }
 
                         annotations.map(function (anno) {
                             anno.pageNumber = pageNum;
