@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import {App, Modal, Plugin} from 'obsidian';
 
 import ExtractPDFHighlightsPluginSettings from "./ExtractPDFHighlightsPluginSettings";
 import ExtractPDFHighlightsPluginSettingsTab from "./ExtractPDFHighlightsPluginSettingsTab";
@@ -7,6 +7,7 @@ import PDFAnnotationsManager from "./PDFAnnotationsManager";
 export default class ExtractPDFHighlightsPlugin extends Plugin {
 
 	public settings: ExtractPDFHighlightsPluginSettings;
+	private modal: ProgressModal;
 
 	async onload() {
 		this.loadSettings();
@@ -19,6 +20,9 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 	onunload() {}
 
 	async processPDFHighlights() {
+		this.modal = new ProgressModal(this.app);
+		// this.modal.open();
+
 		let file = this.app.workspace.getActiveFile();
 
 		if (file === null) return;
@@ -133,5 +137,24 @@ export default class ExtractPDFHighlightsPlugin extends Plugin {
 		}
 
 		return "";
+	}
+}
+
+class ProgressModal extends Modal {
+	public fileName: string;
+
+	constructor(app: App) {
+		super(app);
+	}
+
+	onOpen() {
+		let {contentEl} = this;
+		contentEl.createEl("h2", {text: "Extract PDF Highlights"});
+		contentEl.createEl("p", {text: "I'm sorry but due to an unexpected incompatibility with Obsidian Core PDF handling as of v0.10.8 this plugin is currently disabled. In the meantime, you can use Zotero + Zotfile to extract PDF highlights and annotations. I'm sorry for the inconvenience and working on fixing this issue. If you have any questions, please email me at alexis.rondeau@gmail.com! Thank you for your patience, Alexis :)"});
+	}
+
+	onClose() {
+		let {contentEl} = this;
+		contentEl.empty();
 	}
 }
